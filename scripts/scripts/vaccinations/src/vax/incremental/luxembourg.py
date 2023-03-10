@@ -23,20 +23,21 @@ def read(source: str) -> pd.Series:
 
 
 def parse_total_vaccinations(container) -> int:
-    total_vaccinations = clean_count(container.find(class_="number").text)
-    return total_vaccinations
+    return clean_count(container.find(class_="number").text)
 
 
 def parse_people_vaccinated(container) -> int:
     people_vaccinated = container.find(class_="cmp-text").text
-    people_vaccinated = re.search(r"Dose 1\:\s([\d\.]{6,})", people_vaccinated).group(1)
+    people_vaccinated = re.search(r"Dose 1\:\s([\d\.]{6,})", people_vaccinated)[1]
     people_vaccinated = clean_count(people_vaccinated)
     return people_vaccinated
 
 
 def parse_people_fully_vaccinated(container) -> int:
     people_fully_vaccinated = container.find(class_="cmp-text").text
-    people_fully_vaccinated = re.search(r"Dose 2\:\s([\d\.]{6,})", people_fully_vaccinated).group(1)
+    people_fully_vaccinated = re.search(
+        r"Dose 2\:\s([\d\.]{6,})", people_fully_vaccinated
+    )[1]
     people_fully_vaccinated = clean_count(people_fully_vaccinated)
     return people_fully_vaccinated
 

@@ -21,8 +21,9 @@ def main(paths):
         "Vakcinācijas datums", "Vakcinēto personu skaits", "Vakcinācijas posms", "Preparāts"
     ])
     df["vaccine"] = df["Preparāts"].str.strip()
-    vaccines_wrong = set(df["vaccine"].unique()).difference(vaccine_mapping)
-    if vaccines_wrong:
+    if vaccines_wrong := set(df["vaccine"].unique()).difference(
+        vaccine_mapping
+    ):
         raise ValueError(f"Missing vaccines: {vaccines_wrong}")
     df = df.replace(vaccine_mapping)
 

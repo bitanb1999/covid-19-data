@@ -26,7 +26,7 @@ def parse_vaccinations(elem) -> dict:
     text = "\n".join([p.text for p in soup.find("article").find_all("p")])
 
     # Find metrics
-    metrics = dict()
+    metrics = {}
     # total_vaccinations = re.search(r"疫苗共有(?P<count>[\d,]*)人次", text)
     total_vaccinations = re.search(r"疫苗劑數為(?P<count>[\d,]*)劑", text)
     # print(total_vaccinations)
@@ -36,11 +36,11 @@ def parse_vaccinations(elem) -> dict:
     people_fully_vaccinated = re.search(r"已完成接種2劑有(?P<count>[\d,]*)人", text)
 
     if total_vaccinations:
-        metrics["total_vaccinations"] = clean_count(total_vaccinations.group(1))
+        metrics["total_vaccinations"] = clean_count(total_vaccinations[1])
     if people_vaccinated:
-        metrics["people_vaccinated"] = clean_count(people_vaccinated.group(1))
+        metrics["people_vaccinated"] = clean_count(people_vaccinated[1])
     if people_fully_vaccinated:
-        metrics["people_fully_vaccinated"] = clean_count(people_fully_vaccinated.group(1))
+        metrics["people_fully_vaccinated"] = clean_count(people_fully_vaccinated[1])
     return metrics
 
 
@@ -81,18 +81,14 @@ def read(source: str, last_update: str, num_pages_limit: int = 10):
         # Get soup
         url = f"{source}/{page_nr}/"
         soup = get_soup(url, verify=False)
-        # Get data (if any)
-        records_sub = parse_data(soup)
-        if records_sub:
+        if records_sub := parse_data(soup):
             records.extend(records_sub)
-            if any([record["date"] <= last_update for record in records_sub]):
+            if any(record["date"] <= last_update for record in records_sub):
                 # print("Dates exceding!  ", str([record["date"] for record in records_sub]))
                 break
-    if len(records) > 0:
+    if records:
         records = [record for record in records if record["date"] >= last_update]
-        if len(records) > 0:
-            return postprocess(pd.DataFrame(records))
-    return None
+    return postprocess(pd.DataFrame(records)) if records else None
 
 
 def enrich_location(df: pd.DataFrame) -> pd.DataFrame:

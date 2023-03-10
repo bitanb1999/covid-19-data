@@ -75,13 +75,10 @@ class CountryChecker:
     def check_column_names(self):
         cols = ["total_vaccinations", "vaccine", "date", "location", "source_url"]
         cols_extra = cols + ["people_vaccinated", "people_fully_vaccinated"]
-        cols_missing = [col for col in cols if col not in self.df.columns]
-        if cols_missing:
+        if cols_missing := [col for col in cols if col not in self.df.columns]:
             raise ValueError(f"{self.location} -- df missing column(s): {cols_missing}.")
-        # Ensure validity of column names in df
-        if not self.allow_extra_cols:
-            cols_wrong = [col for col in self.df.columns if col not in cols_extra]
-            if cols_wrong:
+        if cols_wrong := [col for col in self.df.columns if col not in cols_extra]:
+            if not self.allow_extra_cols:
                 raise ValueError(f"{self.location} -- df contains invalid column(s): {cols_wrong}.")
 
     def check_source_url(self):
@@ -91,8 +88,8 @@ class CountryChecker:
     def check_vaccine(self):
         if self.df.vaccine.isnull().any():
             raise ValueError(f"{self.location} -- Invalid vaccine! NaN values found.")
-        vaccines_used = set([xx for x in self.df.vaccine.tolist() for xx in x.split(', ')])
-        if not all([vac in VACCINES_ACCEPTED for vac in vaccines_used]):
+        vaccines_used = {xx for x in self.df.vaccine.tolist() for xx in x.split(', ')}
+        if any(vac not in VACCINES_ACCEPTED for vac in vaccines_used):
             vaccines_wrong = [vac for vac in vaccines_used if vac not in VACCINES_ACCEPTED]
             raise ValueError(f"{self.location} -- Invalid vaccine detected! Check {vaccines_wrong}.")
 

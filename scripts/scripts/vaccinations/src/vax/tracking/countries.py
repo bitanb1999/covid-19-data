@@ -149,15 +149,14 @@ def country_updates_summary(path_vaccinations: str = None, path_locations: str =
             return "ECDC"
         else:
             return "Others"
+
     df = df.assign(**{"web_type": df.source_website.apply(_web_type)})
 
     if vaccines:
         df_vax = vaccines_comparison_with_who()
         df = df.merge(df_vax[["location", "missing_in_who", "missing_in_owid"]], on="location", how="left")
     # Return data
-    if as_dict:
-        return df.to_dict(orient="records")
-    return df
+    return df.to_dict(orient="records") if as_dict else df
 
 
 def countries_missing(
@@ -190,6 +189,4 @@ def countries_missing(
     if not ascending:
         df_mis = df_mis.sort_values(by="population", ascending=False)
     # Return data
-    if as_dict:
-        return df_mis.to_dict(orient="records")
-    return df_mis
+    return df_mis.to_dict(orient="records") if as_dict else df_mis

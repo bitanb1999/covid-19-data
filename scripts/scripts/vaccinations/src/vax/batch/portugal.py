@@ -15,11 +15,7 @@ def read(source_continent: str, source_islands: str) -> pd.DataFrame:
         "doses_madeira", "doses1_madeira", "doses2_madeira"
     ])
 
-    # If the daily data from vacinas.csv ever includes the islands directly, we'll need to remove
-    # this merge and simply use the data from vacinas.csv
-    df = pd.merge(df_continent, df_islands, how="outer", on="data")
-
-    return df
+    return pd.merge(df_continent, df_islands, how="outer", on="data")
 
 
 def rename_columns(df: pd.DataFrame) -> pd.DataFrame:

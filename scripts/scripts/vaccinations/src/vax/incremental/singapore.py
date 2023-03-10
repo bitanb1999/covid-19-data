@@ -14,20 +14,27 @@ def read(source: str) -> pd.Series:
 
 
 def parse_data(soup: BeautifulSoup) -> pd.Series:
-    data = pd.Series({
-        "date": parse_date(soup),
-        "total_vaccinations": parse_metric(soup, "Total Doses Administered"),
-        "people_vaccinated": parse_metric(soup, "Received at least First Dose"),
-        "people_fully_vaccinated": parse_metric(soup, "Completed Full Vaccination Regimen"),
-    })
-    return data
+    return pd.Series(
+        {
+            "date": parse_date(soup),
+            "total_vaccinations": parse_metric(
+                soup, "Total Doses Administered"
+            ),
+            "people_vaccinated": parse_metric(
+                soup, "Received at least First Dose"
+            ),
+            "people_fully_vaccinated": parse_metric(
+                soup, "Completed Full Vaccination Regimen"
+            ),
+        }
+    )
 
 
 def parse_date(soup: BeautifulSoup) -> str:
     for h3 in soup.find_all("h3"):
         if "Vaccination Data" in h3.text:
             break
-    date = re.search(r"as of (\d+ \w+ \d+)", h3.text).group(1)
+    date = re.search(r"as of (\d+ \w+ \d+)", h3.text)[1]
     date = str(pd.to_datetime(date).date())
     return date
 

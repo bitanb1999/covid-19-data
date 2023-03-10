@@ -47,24 +47,26 @@ def main_propose_data_twitter(paths, consumer_key: str, consumer_secret: str, pa
             ) for module_name in modules_name
         )
     else:
-        modules_execution_results = []
-        for module_name in modules_name:
-            modules_execution_results.append(_propose_data_country(
+        modules_execution_results = [
+            _propose_data_country(
                 api,
                 module_name,
                 paths,
-            ))
-
+            )
+            for module_name in modules_name
+        ]
     modules_failed = [m["module_name"] for m in modules_execution_results if m["success"] is False]
     # Retry failed modules
     logger.info(f"\n---\n\nRETRIALS ({len(modules_failed)})")
-    modules_execution_results = []
-    for module_name in modules_failed:
-        modules_execution_results.append(
-            _propose_data_country(api, module_name, paths)
-        )
-    modules_failed_retrial = [m["module_name"] for m in modules_execution_results if m["success"] is False]
-    if len(modules_failed_retrial) > 0:
+    modules_execution_results = [
+        _propose_data_country(api, module_name, paths)
+        for module_name in modules_failed
+    ]
+    if modules_failed_retrial := [
+        m["module_name"]
+        for m in modules_execution_results
+        if m["success"] is False
+    ]:
         failed_str = "\n".join([f"* {m}" for m in modules_failed_retrial])
         print(f"\n---\n\nThe following scripts failed to run ({len(modules_failed_retrial)}):\n{failed_str}")
     print_eoe()

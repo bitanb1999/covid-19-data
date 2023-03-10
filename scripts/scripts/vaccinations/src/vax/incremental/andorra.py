@@ -23,8 +23,8 @@ class Andorra:
         regex = r"s’han administrat un total de ([\d\.]+) vacunes i hi ha ([\d\.]+) persones que han rebut, com a mínim, una dosi del vaccí"
         match = re.search(regex, soup.text)
         # Metrics
-        total_vaccinations = clean_count(match.group(1))
-        people_vaccinated = clean_count(match.group(2))
+        total_vaccinations = clean_count(match[1])
+        people_vaccinated = clean_count(match[2])
         people_fully_vaccinated = total_vaccinations - people_vaccinated
         return pd.Series({
             "total_vaccinations": total_vaccinations,

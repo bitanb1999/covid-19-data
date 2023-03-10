@@ -12,7 +12,7 @@ def main():
     soup = BeautifulSoup(req.content, "html.parser")
 
     date = soup.find("div", class_="section-tittle").find("p").text
-    date = re.search(r"Update (\d+[^\d]+202\d)", date).group(1)
+    date = re.search(r"Update (\d+[^\d]+202\d)", date)[1]
     date = pd.Series(pd.to_datetime(date)).dt.date.astype(str)
 
     if data.Date.max() < date[0]:

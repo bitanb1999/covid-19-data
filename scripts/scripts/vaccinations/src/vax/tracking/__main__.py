@@ -38,8 +38,7 @@ def _parse_args():
         "--vax", action="store_true",
         help="Add vaccines missing (compared to WHO's data)."
     )
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def export_to_csv(df, filename):

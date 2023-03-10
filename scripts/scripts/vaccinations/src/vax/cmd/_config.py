@@ -89,12 +89,11 @@ class ConfigParams(object):
         return {}
 
     def _load_json_credentials(self):
-        if self.credentials_file_exists:
-            with open(self.credentials_file) as f:
-                return json.load(f)
-        else:
+        if not self.credentials_file_exists:
             raise FileNotFoundError(f"Credentials file not found. Check path {self.credentials_file}. We recommend"
                                      "setting this in `config.yaml`.")
+        with open(self.credentials_file) as f:
+            return json.load(f)
 
     def GetDataConfig(self):
         """Use `_token`/`id`/`secret` for variables that are secret"""
@@ -139,8 +138,7 @@ class ConfigParams(object):
 
     def _return_value_credentials(self, feature_name):
         if feature_name in self._credentials:
-            v = self._credentials[feature_name]
-            if v:
+            if v := self._credentials[feature_name]:
                 return v
         raise AttributeError(f"Missing field {feature_name} or value was None in credentials")
 
@@ -151,11 +149,12 @@ class ConfigParams(object):
             keys = list(chain.from_iterable(xx.keys() for xx in x))
             if set(keys).difference({"date", "metrics"}):
                 return False
-            if not all(isinstance(xx["metrics"], (list, str)) for xx in x):
-                return False
-            if not all(isinstance(xx["date"], date) for xx in x):
-                return False
-            return True
+            return (
+                all((isinstance(xx["date"], date) for xx in x))
+                if all(isinstance(xx["metrics"], (list, str)) for xx in x)
+                else False
+            )
+
         x = self._return_value_pipeline("process-data", metric, {})
         for _, v in x.items():
             if v is None:
@@ -175,20 +174,16 @@ class ConfigParams(object):
     def _return_value_pipeline(self, step, feature_name, feature_from_args):
         try:
             v = self._config["pipeline"][step][feature_name]
-            if v is not None:
-                return v
-            else:
-                return feature_from_args
+            return v if v is not None else feature_from_args
         except KeyError:
             return feature_from_args
 
     def __str__(self):
         if self.config_file_exists:
             s = f"CONFIGURATION PARAMS:\nfile: {self.config_file}\n\n"
-            s += "*************************\n"
         else:
             s = f"CONFIGURATION PARAMS:\nNo config file\n\n"
-            s += "*************************\n"
+        s += "*************************\n"
         if "get" in self.mode:
             s += f"Get Data: \n{self.GetDataConfig().__str__()}"
         if "process" in self.mode:
@@ -213,6 +208,4 @@ def _countries_to_modules(countries):
         if countries_wrong:
             print(f"Invalid countries: {countries_wrong}. Valid countries are: {countries_valid}")
             raise ValueError("Invalid country")
-        # Get module equivalent names
-        modules = [country_to_module[country] for country in countries]
-        return modules
+        return [country_to_module[country] for country in countries]

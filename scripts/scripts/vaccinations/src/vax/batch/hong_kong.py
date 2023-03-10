@@ -21,9 +21,8 @@ def enrich_vaccinations(df: pd.DataFrame) -> pd.DataFrame:
 
 def enrich_vaccine(df: pd.DataFrame) -> pd.DataFrame:
     def _enrich_vaccine(date: str) -> str:
-        if date < "2021-03-06":
-            return "Sinovac"
-        return "Pfizer/BioNTech, Sinovac"
+        return "Sinovac" if date < "2021-03-06" else "Pfizer/BioNTech, Sinovac"
+
     return df.assign(vaccine=df.date.apply(_enrich_vaccine))
 
 

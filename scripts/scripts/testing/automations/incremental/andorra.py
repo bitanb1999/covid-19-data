@@ -38,8 +38,8 @@ def get_date(soup):
     date_str = soup.find(class_="text-primary tracking-normal text-lg font-bold mb-0").text.lower()
     match = re.search(r"actualització (\d+) d(e |')([a-z]+)", date_str)
     # Get day and month from website
-    day = int(match.group(1))
-    month = int(month_map[match.group(3)])
+    day = int(match[1])
+    month = int(month_map[match[3]])
     # Estimate year and build date
     year = datetime.datetime.now().year
     date = datetime.date(year, month, day)
@@ -62,16 +62,14 @@ def get_count(soup):
     values = [elem.find("span") for elem in soup.find(id=tag_id).find_all("div", class_="text-primary")]
     values = [int(x.text.replace(".", "")) for x in values]
     titles = [x.text.strip() for x in soup.find(id=tag_id).findAll("h3")]
-    
+
     count = 0
     for value, title in zip(values, titles):
         if "PCR" in title:
             count_pcr = value
         elif "TMA" in title:
             count_tma = value
-    count = count_pcr + count_tma
-    
-    return count
+    return count_pcr + count_tma
 
 
 def is_404(soup):

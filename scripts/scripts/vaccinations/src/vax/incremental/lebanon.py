@@ -10,8 +10,7 @@ from vax.utils.dates import localdate
 def get_api_value(source: str, query: str, headers: dict):
     query = json.loads(query)
     data = requests.post(source, json=query, headers=headers).json()
-    value = int(data["hits"]["total"])
-    return value
+    return int(data["hits"]["total"])
 
 
 def read(source: str) -> pd.Series:

@@ -11,9 +11,7 @@ def check_columns(df: pd.DataFrame, expected) -> pd.DataFrame:
     n_columns = df.shape[1]
     if n_columns != expected:
         raise ValueError(
-            "The provided input does not have {} columns. It has {} columns".format(
-                expected, n_columns
-            )
+            f"The provided input does not have {expected} columns. It has {n_columns} columns"
         )
     return df
 

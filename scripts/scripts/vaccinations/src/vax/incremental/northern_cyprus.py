@@ -17,7 +17,7 @@ def parse_data(soup: BeautifulSoup) -> pd.Series:
 
     numbers = soup.find_all(class_="odometer")
 
-    date = re.search(r"[\d\.]{10}", soup.find(class_="counter").text).group(0)
+    date = re.search(r"[\d\.]{10}", soup.find(class_="counter").text)[0]
     date = clean_date(date, "%d.%m.%Y")
 
     return pd.Series(data={

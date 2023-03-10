@@ -29,9 +29,7 @@ def read_xlsx_from_url(url: str, as_series: bool = False, **kwargs) -> pd.DataFr
         with open(tmp.name, 'wb') as f:
             f.write(response.content)
         df = pd.read_excel(tmp.name, **kwargs)
-    if as_series:
-        return df.T.squeeze()
-    return df
+    return df.T.squeeze() if as_series else df
 
 
 def get_headers() -> dict:

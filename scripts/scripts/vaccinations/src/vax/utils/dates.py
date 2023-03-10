@@ -35,12 +35,10 @@ def clean_date(text, fmt, lang=None, loc="", minus_days=0):
         str: Extracted date in format %Y-%m-%d
     """
     # If lang is given, map language to a locale
-    if lang is not None:
-        if lang in locale.locale_alias:
-            loc = locale.locale_alias[lang]
-    if platform == "win32":
-        if loc is not None:
-            loc = loc.replace("_", "-")
+    if lang is not None and lang in locale.locale_alias:
+        loc = locale.locale_alias[lang]
+    if platform == "win32" and loc is not None:
+        loc = loc.replace("_", "-")
     # Thread-safe extract date
     with _setlocale(loc):
         return (
@@ -78,9 +76,10 @@ def extract_clean_date(text: str, regex: str, date_format: str, lang: str = None
     """
     if unicode_norm:
         text = unicodedata.normalize('NFKC', text)
-    date_raw = re.search(regex, text).group(1)
-    date_str = clean_date(date_raw, fmt=date_format, lang=lang, loc=loc, minus_days=minus_days)
-    return date_str
+    date_raw = re.search(regex, text)[1]
+    return clean_date(
+        date_raw, fmt=date_format, lang=lang, loc=loc, minus_days=minus_days
+    )
 
 def localdatenow(tz=None):
     if tz is None:

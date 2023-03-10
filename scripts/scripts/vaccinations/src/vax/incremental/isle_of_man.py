@@ -40,13 +40,11 @@ def parse_data(df: pd.DataFrame) -> pd.Series:
 
 
 def parse_people_fully_vaccinated(df: dict) -> int:
-    people_fully_vaccinated = [elem["C"][1] for elem in df if elem["C"][0] == "Second dose"][0]
-    return people_fully_vaccinated
+    return [elem["C"][1] for elem in df if elem["C"][0] == "Second dose"][0]
 
 
 def parse_people_vaccinated(df: dict) -> int:
-    people_vaccinated = [elem["C"][1] for elem in df if elem["C"][0] == "First dose"][0]
-    return people_vaccinated
+    return [elem["C"][1] for elem in df if elem["C"][0] == "First dose"][0]
 
 
 def add_totals(ds: pd.Series) -> pd.Series:

@@ -24,27 +24,21 @@ def parse_data(last_update: str, max_iter: int = 10):
     records = []
     for days in range(10):
         date_it = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
-        # print(date_it)
-        # print(f"{date_it} > {last_update}?")
-        if date_it > last_update:
-            source = _get_source_url(date_it.replace("-", ""))
-            try:
-                df_ = pd.read_excel(source, index_col=0)
-            except HTTPError:
-                print("No available!")
-            else:
-                # print("Adding!")
-                _check_vaccine_names(df_)
-                ds = _parse_ds_data(df_, source)
-                records.append(ds)
-        else:
+        if date_it <= last_update:
             # print("End!")
             break
-        # print(max_iter)
-    if len(records) > 0:
-        return pd.DataFrame(records)
-    # print("No data being added to Spain")
-    return None
+        source = _get_source_url(date_it.replace("-", ""))
+        try:
+            df_ = pd.read_excel(source, index_col=0)
+        except HTTPError:
+            print("No available!")
+        else:
+            # print("Adding!")
+            _check_vaccine_names(df_)
+            ds = _parse_ds_data(df_, source)
+            records.append(ds)
+            # print(max_iter)
+    return pd.DataFrame(records) if records else None
 
 
 def _parse_ds_data(df: pd.DataFrame, source: str) -> pd.Series:
@@ -68,21 +62,27 @@ def _get_source_url(dt_str):
 def _get_vaccine_names(df: pd.DataFrame, translate: bool = False):
     regex_vaccines = r'Dosis entregadas ([a-zA-Z]*) \(1\)'
     if translate:
-        return sorted([
-            vaccine_mapping[re.search(regex_vaccines, col).group(1)]
-            for col in df.columns if re.match(regex_vaccines, col)
-        ])
+        return sorted(
+            [
+                vaccine_mapping[re.search(regex_vaccines, col)[1]]
+                for col in df.columns
+                if re.match(regex_vaccines, col)
+            ]
+        )
     else:
-        return sorted([
-            re.search(regex_vaccines, col).group(1) for col in df.columns if re.match(regex_vaccines, col)
-        ])
+        return sorted(
+            [
+                re.search(regex_vaccines, col)[1]
+                for col in df.columns
+                if re.match(regex_vaccines, col)
+            ]
+        )
 
 
 def _check_vaccine_names(df: pd.DataFrame):
     vaccines = _get_vaccine_names(df)
-    unknown_vaccines = set(vaccines).difference(vaccine_mapping.keys())
-    if unknown_vaccines:
-        raise ValueError("Found unknown vaccines: {}".format(unknown_vaccines))
+    if unknown_vaccines := set(vaccines).difference(vaccine_mapping.keys()):
+        raise ValueError(f"Found unknown vaccines: {unknown_vaccines}")
 
 
 def enrich_location(df: pd.DataFrame) -> pd.DataFrame:

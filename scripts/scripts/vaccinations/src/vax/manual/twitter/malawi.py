@@ -41,8 +41,7 @@ class Malawi(TwitterCollectorBase):
                         "source_url": self.build_post_url(tweet.id),
                         "media_url": url,
                     })
-        df = pd.DataFrame(records)
-        return df
+        return pd.DataFrame(records)
 
 
 def main(api, paths):

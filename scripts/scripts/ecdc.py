@@ -117,7 +117,7 @@ def check_data_correctness(filename):
         print_err("\n" + ERROR + " Could not find OWID names for:")
         print_err(df_uniq[df_uniq['location'].isnull()])
         csv_path = os.path.join(TMP_PATH, 'ecdc.csv')
-        os.system('mkdir -p %s' % os.path.abspath(TMP_PATH))
+        os.system(f'mkdir -p {os.path.abspath(TMP_PATH)}')
         df_uniq[['countriesAndTerritories']] \
             .drop_duplicates() \
             .rename(columns={'countriesAndTerritories': 'Country'}) \
@@ -136,12 +136,18 @@ def check_data_correctness(filename):
         print_err("\n" + ERROR + " Found duplicate rows:")
         print_err(df_merged[df_merged.duplicated(subset=['dateRep', 'location'])])
         print_err("\nPlease " + colored("fix or remove the duplicate rows", 'magenta') + " in the Excel file, and then save it again but under a new name, e.g. 2020-03-20-modified.xlsx")
-        print_err("Also please " + colored("note down any changes you made", 'magenta') + " in %s" % os.path.abspath(os.path.join(INPUT_PATH, 'NOTES.md')))
+        print_err(
+            "Also please "
+            + colored("note down any changes you made", 'magenta')
+            + f" in {os.path.abspath(os.path.join(INPUT_PATH, 'NOTES.md'))}"
+        )
         errors += 1
 
     # Check for missing population figures
     df_pop = load_population()
-    pop_entity_diff = set(df_uniq['location']) - set(df_pop['location']) - set(['International'])
+    pop_entity_diff = (
+        set(df_uniq['location']) - set(df_pop['location']) - {'International'}
+    )
     if len(pop_entity_diff) > 0:
         # this is not an error, so don't increment errors variable
         print("\n" + WARNING + " These entities were not found in the population dataset:")
@@ -171,12 +177,7 @@ def check_data_correctness(filename):
             new_RA = np.mean(country_vals[-7:])
 
             if new_RA >= 1.5 * previous_RA and new_RA > 100:
-                sudden_changes_msg += "<!> Sudden increase of *{}* in *{}*: {} (7-day average was {})\n".format(
-                    var_name,
-                    location,
-                    int(country_vals[-1]),
-                    int(previous_RA)
-                )
+                sudden_changes_msg += f"<!> Sudden increase of *{var_name}* in *{location}*: {int(country_vals[-1])} (7-day average was {int(previous_RA)})\n"
 
             new_val = country_vals[-1]
 

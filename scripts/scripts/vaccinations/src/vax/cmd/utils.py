@@ -8,8 +8,7 @@ def get_logger():
         level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S'
     )
-    logger = logging.getLogger()
-    return logger
+    return logging.getLogger()
 
 
 def normalize_country_name(country_name: str):

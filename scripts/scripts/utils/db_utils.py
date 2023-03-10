@@ -72,8 +72,7 @@ class DBUtils:
         self.cursor.execute(*args, **kwargs)
         if self.cursor.rowcount == 0: return UNMODIFIED
         if self.cursor.rowcount == 1: return INSERT
-        if self.cursor.rowcount == 2: return UPDATE
-        return None
+        return UPDATE if self.cursor.rowcount == 2 else None
 
     def upsert_many(self, query, tuples):
         self.cursor.executemany(query, tuples)
@@ -265,10 +264,7 @@ class DBUtils:
         # Populate cache from database
         self.prefill_entity_cache([name])
         entity_id = self.__get_cached_entity_id(name)
-        if entity_id is not None:
-            return entity_id
-        # If still not in cache, it's a new entity and we have to insert it
-        else:
+        if entity_id is None:
             self.upsert_one("""
                 INSERT INTO entities
                     (name, displayName, validated, createdAt, updatedAt)
@@ -282,7 +278,7 @@ class DBUtils:
             """, [name])
             # Cache the newly created entity
             self.entity_id_by_normalised_name[normalize_entity_name(name)] = entity_id
-            return entity_id
+        return entity_id
 
     def prefill_entity_cache(self, names):
         rows = self.fetch_many("""
@@ -305,10 +301,7 @@ class DBUtils:
             'country_names': [normalize_entity_name(x) for x in names]
         })
         # Merge the two dicts
-        self.entity_id_by_normalised_name.update({
-            # entityName → entityId
-            **dict((row[1], row[2]) for row in rows if row[1]),
-            # country_tool_name → entityId
-            # the country tool name should take precedence
-            **dict((row[0], row[2]) for row in rows if row[0])
-        })
+        self.entity_id_by_normalised_name.update(
+            {row[1]: row[2] for row in rows if row[1]}
+            | {row[0]: row[2] for row in rows if row[0]}
+        )

@@ -43,9 +43,10 @@ def _get_vaccine_names(data: dict, translate: bool = False) -> list:
 
 
 def _check_vaccine_names(vaccine_names: list):
-    unknown_vaccines = set(vaccine_names).difference(vaccine_mapping.keys())
-    if unknown_vaccines:
-        raise ValueError("Found unknown vaccines: {}".format(unknown_vaccines))
+    if unknown_vaccines := set(vaccine_names).difference(
+        vaccine_mapping.keys()
+    ):
+        raise ValueError(f"Found unknown vaccines: {unknown_vaccines}")
 
 
 def add_totals(ds: pd.Series) -> pd.Series:

@@ -47,7 +47,7 @@ def test_check_with_r(paths):
             jas_p = json.load(f)
         with open(outputs.html_table, 'rb') as f:
             htm_p = f.read()
-        
+
         # Load R generated files
         # paths
         locations = os.path.join(paths.project_dir, "public/data/vaccinations/locations.csv")
@@ -92,17 +92,17 @@ def test_check_with_r(paths):
         print("----------------")
         print("Equals")
         print("location: ", loc_r.equals(loc_p))
-        print(str((~(loc_r == loc_p)).sum()))
+        print((~(loc_r == loc_p)).sum())
         print("automated: ", aut_r.equals(aut_p))
         print("vaccinations: ", vax_r.equals(vax_p))
         print("manufacturer: ", vaxm_r.equals(vaxm_p))
         print("grapher: ", gra_r.equals(gra_p))
         print("grapher manufacturer: ", gram_r.equals(gram_p))
         # Compare order of countries
-        a = str(jas_r)  
+        a = str(jas_r)
         b = str(jas_p).replace(".0,", ",").replace(".00,", ",").replace(".0}", "}")
         print("vaccinations_json:", jas_p == jas_r)
-        print("vaccinations_json:", all([r==p for r, p in zip(jas_p, jas_r)]))
+        print("vaccinations_json:", all(r==p for r, p in zip(jas_p, jas_r)))
         print("vaccinations_json:", a == b)
         m = 10650 # Hardcoded, avoid comparison shift due to Denmark
         print("HTML:", htm_p[:m] == htm_r[:m])

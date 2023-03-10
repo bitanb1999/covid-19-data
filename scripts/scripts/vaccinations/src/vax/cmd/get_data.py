@@ -13,10 +13,7 @@ logger = get_logger()
 # Import modules
 country_to_module_batch = {c: f"vax.batch.{c}" for c in batch_countries}
 country_to_module_incremental = {c: f"vax.incremental.{c}" for c in incremental_countries}
-country_to_module = {
-    **country_to_module_batch,
-    **country_to_module_incremental,
-}
+country_to_module = country_to_module_batch | country_to_module_incremental
 modules_name_batch = list(country_to_module_batch.values())
 modules_name_incremental = list(country_to_module_incremental.values())
 modules_name = modules_name_batch + modules_name_incremental
@@ -65,24 +62,26 @@ def main_get_data(paths, parallel: bool = False, n_jobs: int = -2, modules_name:
             ) for module_name in modules_name
         )
     else:
-        modules_execution_results = []
-        for module_name in modules_name:
-            modules_execution_results.append(_get_data_country(
+        modules_execution_results = [
+            _get_data_country(
                 module_name,
                 paths,
                 skip_countries,
-            ))
-
+            )
+            for module_name in modules_name
+        ]
     modules_failed = [m["module_name"] for m in modules_execution_results if m["success"] is False]
     # Retry failed modules
     logger.info(f"\n---\n\nRETRIALS ({len(modules_failed)})")
-    modules_execution_results = []
-    for module_name in modules_failed:
-        modules_execution_results.append(
-            _get_data_country(module_name, paths, skip_countries)
-        )
-    modules_failed_retrial = [m["module_name"] for m in modules_execution_results if m["success"] is False]
-    if len(modules_failed_retrial) > 0:
+    modules_execution_results = [
+        _get_data_country(module_name, paths, skip_countries)
+        for module_name in modules_failed
+    ]
+    if modules_failed_retrial := [
+        m["module_name"]
+        for m in modules_execution_results
+        if m["success"] is False
+    ]:
         failed_str = "\n".join([f"* {m}" for m in modules_failed_retrial])
         print(f"\n---\n\nThe following scripts failed to run ({len(modules_failed_retrial)}):\n{failed_str}")
     print_eoe()

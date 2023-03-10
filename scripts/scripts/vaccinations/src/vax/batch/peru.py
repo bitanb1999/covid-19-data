@@ -14,9 +14,10 @@ def main(paths):
         "PFIZER": "Pfizer/BioNTech",
         "ASTRAZENECA": "Oxford/AstraZeneca"
     }
-    unknown_vaccines = set(df["vaccine"].unique()).difference(vaccine_mapping.keys())
-    if unknown_vaccines:
-        raise ValueError("Found unknown vaccines: {}".format(unknown_vaccines))
+    if unknown_vaccines := set(df["vaccine"].unique()).difference(
+        vaccine_mapping.keys()
+    ):
+        raise ValueError(f"Found unknown vaccines: {unknown_vaccines}")
     df = df.replace(vaccine_mapping)
 
     df = (

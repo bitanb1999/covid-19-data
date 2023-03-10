@@ -21,9 +21,8 @@ class Eswatini(TwitterCollectorBase):
         regex = r"Minister of Health Lizzie Nkosi's #COVID19 update on (\d{1,2} [a-zA-Z]+ 202\d)"
         data = []
         for tweet in self.tweets:
-            match = re.search(regex, tweet.full_text)
-            if match:
-                dt = clean_date(match.group(1), "%d %B %Y")
+            if match := re.search(regex, tweet.full_text):
+                dt = clean_date(match[1], "%d %B %Y")
                 if self.stop_search(dt):
                     break
                 data.append({
@@ -32,8 +31,7 @@ class Eswatini(TwitterCollectorBase):
                     "source_url": self.build_post_url(tweet.id),
                     "media_url": tweet.extended_entities["media"][0]["media_url_https"],
                 })
-        df = pd.DataFrame(data)
-        return df
+        return pd.DataFrame(data)
 
 
 def main(api, paths):

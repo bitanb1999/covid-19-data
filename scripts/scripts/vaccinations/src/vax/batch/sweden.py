@@ -57,7 +57,7 @@ class Sweden(object):
         df = df[df["Region"] == "| Sverige |"][["Vecka", "Antal vaccinerade", "Vaccinationsstatus"]]
         df = df.pivot_table(values="Antal vaccinerade", index="Vecka", columns="Vaccinationsstatus").reset_index()
         # Week-to-date logic will stop working after 2021
-        if not datetime.date.today().year < 2022:
+        if datetime.date.today().year >= 2022:
             raise ValueError("Check the year! This script is not ready for 2022!")
         df.loc[:, "date"] = df.apply(self._week_to_date, axis=1).dt.date.astype(str)
         df = df.drop(columns=["Vecka"]).sort_values("date").rename(columns={

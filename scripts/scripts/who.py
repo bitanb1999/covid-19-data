@@ -227,8 +227,8 @@ df_merged = df_merged_pop.drop(columns=['year', 'population'])
 
 
 THRESHOLD = 100
-DAYS_SINCE_COL_NAME = 'days_since_%sth_case' % THRESHOLD
-DAYS_SINCE_COL_NAME_POSITIVE = 'days_since_%sth_case_positive' % THRESHOLD
+DAYS_SINCE_COL_NAME = f'days_since_{THRESHOLD}th_case'
+DAYS_SINCE_COL_NAME_POSITIVE = f'days_since_{THRESHOLD}th_case_positive'
 
 
 # In[26]:
@@ -316,28 +316,37 @@ days_to_double_cases['days_to_double_cases'] = days_to_double_cases['days_to_dou
 
 df_grapher = df_merged.copy()
 df_grapher['date'] = pd.to_datetime(df_grapher['date']).map(lambda date: (date - datetime(2020, 1, 21)).days)
-df_grapher = df_grapher[[
-    'location', 'date', 
-    'new_cases', 'new_deaths', 
-    'total_cases', 'total_deaths',
-    'new_cases_per_million', 'new_deaths_per_million', 
-    'total_cases_per_million', 'total_deaths_per_million',
-    DAYS_SINCE_COL_NAME, DAYS_SINCE_COL_NAME_POSITIVE]] \
-    .rename(columns={
+df_grapher = df_grapher[
+    [
+        'location',
+        'date',
+        'new_cases',
+        'new_deaths',
+        'total_cases',
+        'total_deaths',
+        'new_cases_per_million',
+        'new_deaths_per_million',
+        'total_cases_per_million',
+        'total_deaths_per_million',
+        DAYS_SINCE_COL_NAME,
+        DAYS_SINCE_COL_NAME_POSITIVE,
+    ]
+].rename(
+    columns={
         'location': 'country',
         'date': 'year',
         'new_cases': 'Daily new confirmed cases of COVID-19',
         'new_deaths': 'Daily new confirmed deaths due to COVID-19',
-        'total_cases': 'Total confirmed cases of COVID-19', 
+        'total_cases': 'Total confirmed cases of COVID-19',
         'total_deaths': 'Total confirmed deaths due to COVID-19',
         'new_cases_per_million': 'Daily new confirmed cases of COVID-19 per million people',
         'new_deaths_per_million': 'Daily new confirmed deaths due to COVID-19 per million people',
-        'total_cases_per_million': 'Total confirmed cases of COVID-19 per million people', 
+        'total_cases_per_million': 'Total confirmed cases of COVID-19 per million people',
         'total_deaths_per_million': 'Total confirmed deaths due to COVID-19 per million people',
-        DAYS_SINCE_COL_NAME: 'Days since the total confirmed cases of COVID-19 reached %s' % THRESHOLD,
-        DAYS_SINCE_COL_NAME_POSITIVE: 'Days since the total confirmed cases of COVID-19 reached %s (positive only)' % THRESHOLD,
-    
-    })
+        DAYS_SINCE_COL_NAME: f'Days since the total confirmed cases of COVID-19 reached {THRESHOLD}',
+        DAYS_SINCE_COL_NAME_POSITIVE: f'Days since the total confirmed cases of COVID-19 reached {THRESHOLD} (positive only)',
+    }
+)
 
 
 # ## Inspect the results
@@ -379,7 +388,7 @@ for col_name in [
     # move World to first column
     cols = df_pivot.columns.tolist()
     cols.insert(0, cols.pop(cols.index('World')))
-    df_pivot[cols].to_csv(os.path.join(OUTPUT_PATH, '%s.csv' % col_name))
+    df_pivot[cols].to_csv(os.path.join(OUTPUT_PATH, f'{col_name}.csv'))
 
 
 # In[43]:

@@ -67,10 +67,9 @@ def read(source: str) -> pd.DataFrame:
 def source_checks(df: pd.DataFrame) -> pd.DataFrame:
     if len(df) > 300:
         raise ValueError(f"Check source, it may contain updates from several dates! Shape found was {df.shape}")
-    if df.groupby("COUNTRY").DATE_UPDATED.nunique().nunique() == 1:
-        if df.groupby("COUNTRY").DATE_UPDATED.nunique().unique()[0] != 1:
-            raise ValueError("Countries have more than one date update!")
-    else:
+    if df.groupby("COUNTRY").DATE_UPDATED.nunique().nunique() != 1:
+        raise ValueError("Countries have more than one date update!")
+    if df.groupby("COUNTRY").DATE_UPDATED.nunique().unique()[0] != 1:
         raise ValueError("Countries have more than one date update!")
     return df
 
@@ -94,8 +93,7 @@ def vaccine_checks(df: pd.DataFrame) -> pd.DataFrame:
         .apply(lambda x: [xx.strip() for xx in x.split(",")])
         .sum()
     )
-    vaccines_unknown = vaccines_used.difference(VACCINES_WHO_MAPPING)
-    if vaccines_unknown:
+    if vaccines_unknown := vaccines_used.difference(VACCINES_WHO_MAPPING):
         raise ValueError(
             f"Unknown vaccines {vaccines_unknown}. Update `vax.utils.who.VACCINES_WHO_MAPPING` accordingly."
         )

@@ -22,17 +22,21 @@ def parse_data(soup: BeautifulSoup) -> pd.Series:
 
 
 def parse_total_vaccinations(soup: BeautifulSoup) -> int:
-    total_vaccinations = re.search(r"var yapilanasisayisi = (\d+);", str(soup)).group(1)
+    total_vaccinations = re.search(r"var yapilanasisayisi = (\d+);", str(soup))[1]
     return clean_count(total_vaccinations)
 
 
 def parse_people_fully_vaccinated(soup: BeautifulSoup) -> int:
-    people_fully_vaccinated = re.search(r"var asiyapilankisisayisi2Doz = (\d+);", str(soup)).group(1)
+    people_fully_vaccinated = re.search(
+        r"var asiyapilankisisayisi2Doz = (\d+);", str(soup)
+    )[1]
     return clean_count(people_fully_vaccinated)
 
 
 def parse_people_vaccinated(soup: BeautifulSoup) -> int:
-    people_vaccinated = re.search(r"var asiyapilankisisayisi1Doz = (\d+);", str(soup)).group(1)
+    people_vaccinated = re.search(
+        r"var asiyapilankisisayisi1Doz = (\d+);", str(soup)
+    )[1]
     return clean_count(people_vaccinated)
 
 

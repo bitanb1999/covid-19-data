@@ -31,14 +31,11 @@ class NewZealand:
 
     def _parse_file_link(self, soup: BeautifulSoup) -> str:
         href = soup.find(id="download").find_next("a")["href"]
-        link = f"https://{urlparse(self.source_url).netloc}/{href}"
-        return link
+        return f"https://{urlparse(self.source_url).netloc}/{href}"
 
     def rename_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         """Generalized."""
-        if self.columns_rename:
-            return df.rename(columns=self.columns_rename)
-        return df
+        return df.rename(columns=self.columns_rename) if self.columns_rename else df
 
     def cumsum_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         """Generalized."""

@@ -11,14 +11,13 @@ class TwitterAPI:
         return tweepy.API(auth)
 
     def get_tweets(self, username, num_tweets=100):
-        tweets = self._api.user_timeline(
-            screen_name=username, 
+        return self._api.user_timeline(
+            screen_name=username,
             # 200 is the maximum allowed count
             count=num_tweets,
             include_rts=False,
-            # Necessary to keep full_text 
+            # Necessary to keep full_text
             # otherwise only the first 140 words are extracted
             tweet_mode='extended',
             exclude_replies=True,
         )
-        return tweets

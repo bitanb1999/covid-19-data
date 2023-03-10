@@ -23,22 +23,18 @@ def parse_data(soup: BeautifulSoup):
     regex = r"Обе дозе вакцине примило је ([\d.]+) особа. Укупно вакцинација: ([\d.]+) доза"
     matches = re.search(regex, soup.text)
 
-    total_vaccinations = clean_count(matches.group(2))
-    people_fully_vaccinated = clean_count(matches.group(1))
+    total_vaccinations = clean_count(matches[2])
+    people_fully_vaccinated = clean_count(matches[1])
     return total_vaccinations, people_fully_vaccinated
 
 
 def parse_date(soup: BeautifulSoup) -> str:
     regex = r"ажурирано .*"
     elems = soup.find_all("p")
-    x = []
-    for elem in elems:
-        if elem.find(text=re.compile(regex)):
-            x.append(elem)
+    x = [elem for elem in elems if elem.find(text=re.compile(regex))]
     if len(x) > 1:
         raise ValueError("Format of source has changed")
-    date_str = clean_date(x[0].text, "ажурирано %d.%m.%Y")
-    return date_str
+    return clean_date(x[0].text, "ажурирано %d.%m.%Y")
 
 
 def add_totals(ds: pd.Series) -> pd.Series:
