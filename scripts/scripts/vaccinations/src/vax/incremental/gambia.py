@@ -28,8 +28,7 @@ class Gambia:
             if _data["date"] <= last_update:
                 break
             data.append(_data)
-        df = pd.DataFrame(data)
-        return df
+        return pd.DataFrame(data)
 
     def get_pdf_links(self, source) -> list:
         soup = get_soup(source, verify=False)
@@ -42,14 +41,13 @@ class Gambia:
         regex = (
             r"([\d,]+) are already vaccinated against COVID-19 as of (\d{1,2})(?:th|nd|st|rd) ([a-zA-Z]+) (202\d)"
         )
-        match = re.search(regex, text)
-        if match:
-            people_vaccinated = clean_count(match.group(1))
+        if match := re.search(regex, text):
+            people_vaccinated = clean_count(match[1])
             date_raw = " ".join(match.group(2, 3, 4))
             date_str = str(pd.to_datetime(date_raw).date())
 
             regex = r"([\d,]+) people have received their 2nd dose"
-            people_fully_vaccinated = re.search(regex, text).group(1)
+            people_fully_vaccinated = re.search(regex, text)[1]
             people_fully_vaccinated = clean_count(people_fully_vaccinated)
             total_vaccinations = people_vaccinated + people_fully_vaccinated
         else:
@@ -57,10 +55,9 @@ class Gambia:
                 r"([\d,]+) and ([\d,]+) people received the 1st and 2nd doses respectively bringing the total number "
                 r"vaccinated against COVID-19 to ([\d,]+) as of (\d{1,2})(?:th|nd|st|rd) ([a-zA-Z]+) (202\d)"
             )
-            match = re.search(regex, text)
-            if match:
-                people_fully_vaccinated = clean_count(match.group(2))
-                people_vaccinated = clean_count(match.group(3))
+            if match := re.search(regex, text):
+                people_fully_vaccinated = clean_count(match[2])
+                people_vaccinated = clean_count(match[3])
                 total_vaccinations = people_vaccinated + people_fully_vaccinated
                 date_raw = " ".join(match.group(4, 5, 6))
                 date_str = clean_date(date_raw, "%d %B %Y", lang="en")
@@ -71,8 +68,8 @@ class Gambia:
                     r"bringing the total number ever vaccinated to ([\d,]+)"
                 )
                 match = re.search(regex, text)
-                people_fully_vaccinated = clean_count(match.group(5))
-                people_vaccinated = clean_count(match.group(6))
+                people_fully_vaccinated = clean_count(match[5])
+                people_vaccinated = clean_count(match[6])
                 total_vaccinations = people_vaccinated + people_fully_vaccinated
                 date_raw = " ".join(match.group(1, 2, 3))
                 date_str = clean_date(date_raw, fmt="%d %B %Y", lang="en")

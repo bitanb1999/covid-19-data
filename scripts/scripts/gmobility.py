@@ -105,7 +105,7 @@ def export_grapher():
     )
 
     # Save to files
-    os.system("mkdir -p %s" % os.path.abspath(OUTPUT_PATH))
+    os.system(f"mkdir -p {os.path.abspath(OUTPUT_PATH)}")
     country_mobility.to_csv(OUTPUT_CSV_PATH, index=False)
 
 def update_db():

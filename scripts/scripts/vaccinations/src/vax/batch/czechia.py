@@ -33,19 +33,16 @@ def check_columns(df: pd.DataFrame) -> pd.DataFrame:
     ]
     if list(df.columns) != expected:
         raise ValueError(
-            "Wrong columns. Was expecting {} and got {}".format(
-                expected, list(df.columns)
-            )
+            f"Wrong columns. Was expecting {expected} and got {list(df.columns)}"
         )
     return df
 
 
 def check_vaccine_names(df: pd.DataFrame) -> pd.DataFrame:
-    unknown_vaccines = set(df.vakcina.unique()).difference(
+    if unknown_vaccines := set(df.vakcina.unique()).difference(
         set(vaccine_mapping.keys())
-    )
-    if unknown_vaccines:
-        raise ValueError("Found unknown vaccines: {}".format(unknown_vaccines))
+    ):
+        raise ValueError(f"Found unknown vaccines: {unknown_vaccines}")
     return df
 
 
@@ -134,9 +131,7 @@ def check_first_date(df: pd.DataFrame) -> pd.DataFrame:
     expected = "2020-12-27"
     if first_date != expected:
         raise ValueError(
-            "Expected the first date to be {}, encountered {}.".format(
-                expected, first_date
-            )
+            f"Expected the first date to be {expected}, encountered {first_date}."
         )
     return df
 

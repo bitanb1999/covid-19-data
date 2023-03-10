@@ -31,14 +31,11 @@ def load_query(query_filename: str, file_ext: str = "json", to_str: bool = True)
         filename_path = os.path.join(QUERIES_DIR, query_filename)
         if not os.path.isfile(f"{filename_path}"):
             raise FileNotFoundError(f"File {filename_path} not found")
-    if file_ext == "json": 
-        with open(filename_path) as f:
-            data = json.load(f)
-    else:
+    if file_ext != "json":
         raise ValueError("Only JSON format supported")
-    if to_str:
-        return str(data)
-    return data
+    with open(filename_path) as f:
+        data = json.load(f)
+    return str(data) if to_str else data
 
 
 def load_data(data_filename: str, file_ext: str = "csv"):

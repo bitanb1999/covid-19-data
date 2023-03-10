@@ -31,21 +31,19 @@ def parse_pdf_link(base_url: str, soup) -> str:
 def parse_table(url_pdf: str) -> int:
     kwargs = {"pandas_options": {"dtype": str, "header": None}}
     dfs_from_pdf = tabula.read_pdf(url_pdf, pages="all", **kwargs)
-    df = dfs_from_pdf[0]
-    # df = df.dropna(subset=[2])
-    return df
+    return dfs_from_pdf[0]
 
 
 def parse_total_vaccinations(df: pd.DataFrame) -> int:
     num = df.iloc[-1, 4]
-    num = re.match(r"([0-9,]+)", num).group(1)
+    num = re.match(r"([0-9,]+)", num)[1]
     return clean_count(num)
 
 
 def parse_date(soup) -> str:
     date_raw = soup.find(class_="download").text
     regex = r"(\d{4})\sCOVID-19疫苗日報表"
-    date_str = re.search(regex, date_raw).group(1)
+    date_str = re.search(regex, date_raw)[1]
     date_str = clean_date("2021" + date_str, "%Y%m%d")
     return date_str
 

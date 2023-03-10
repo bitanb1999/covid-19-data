@@ -19,9 +19,8 @@ class Maldives(TwitterCollectorBase):
         regex = r"COVID-19 : Vaccination Updates\n\n(\d{1,2}\.\d{1,2}\.202\d).*"
         data = []
         for tweet in self.tweets:
-            match = re.search(regex, tweet.full_text)
-            if match:
-                dt = clean_date(match.group(1), "%d.%m.%Y")
+            if match := re.search(regex, tweet.full_text):
+                dt = clean_date(match[1], "%d.%m.%Y")
                 if self.stop_search(dt):
                     break
                 data.append({

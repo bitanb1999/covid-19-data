@@ -31,8 +31,8 @@ class Nigeria(TwitterCollectorBase):
             match_2 = re.search(regex_2, tweet.full_text)
             match_3 = re.search(regex_3, tweet.full_text)
             if match_1:
-                people_vaccinated = clean_count(match_1.group(5))
-                people_fully_vaccinated = clean_count(match_1.group(6))
+                people_vaccinated = clean_count(match_1[5])
+                people_fully_vaccinated = clean_count(match_1[6])
                 dt = clean_date(" ".join(match_1.group(2, 3, 4)), "%B %d %Y")
                 if self.stop_search(dt):
                     break
@@ -61,8 +61,7 @@ class Nigeria(TwitterCollectorBase):
                     "source_url": self.build_post_url(tweet.id),
                     "media_url": tweet.extended_entities["media"][0]["media_url_https"],
                 })
-        df = pd.DataFrame(data)
-        return df
+        return pd.DataFrame(data)
 
 
 def main(api, paths):

@@ -124,10 +124,13 @@ class GSheet:
         tab_missing = [loc for loc in self.manual_countries if loc not in tab_locations]
         error_msg = []
         if metadata_missing:
-            error_msg.append(f"Tab containing a location missing in LOCATIONS: {str(metadata_missing)}")
+            error_msg.append(
+                f"Tab containing a location missing in LOCATIONS: {metadata_missing}"
+            )
         if tab_missing:
-            error_msg.append(f"Location found in LOCATIONS but no tab with such location was found: "
-                             f"{str(tab_missing)}")
+            error_msg.append(
+                f"Location found in LOCATIONS but no tab with such location was found: {tab_missing}"
+            )
         if error_msg:
             error_msg = "\n".join(error_msg)
             raise ValueError(error_msg)

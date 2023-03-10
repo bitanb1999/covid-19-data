@@ -28,9 +28,7 @@ class Ecuador:
         return df
 
     def rename_columns(self, df: pd.DataFrame) -> pd.DataFrame:
-        if self.columns_rename:
-            return df.rename(columns=self.columns_rename)
-        return df
+        return df.rename(columns=self.columns_rename) if self.columns_rename else df
 
     def format_date(self, df: pd.DataFrame) -> pd.DataFrame:
         return df.assign(date=clean_date_series(df.date, "%d/%m/%Y"))

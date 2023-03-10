@@ -22,7 +22,7 @@ def connect_parse_data(source: str) -> pd.Series:
     total_vaccinations = people_vaccinated + people_fully_vaccinated
 
     date = soup.find(class_="h2-blue").text
-    date = re.search(r"\w+ +\d+, +202\d", date).group(0)
+    date = re.search(r"\w+ +\d+, +202\d", date)[0]
     date = str(pd.to_datetime(date).date())
 
     data = {

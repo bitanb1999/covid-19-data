@@ -11,10 +11,14 @@ def read(source: str) -> pd.Series:
     soup = get_soup(source)
 
     people_vaccinated = clean_count(
-        re.search(r"^[\d,]+", soup.find_all(class_="info-box-number")[2].text).group(0)
+        re.search(r"^[\d,]+", soup.find_all(class_="info-box-number")[2].text)[
+            0
+        ]
     )
     people_fully_vaccinated = clean_count(
-        re.search(r"^[\d,]+", soup.find_all(class_="info-box-number")[3].text).group(0)
+        re.search(r"^[\d,]+", soup.find_all(class_="info-box-number")[3].text)[
+            0
+        ]
     )
     total_vaccinations = people_vaccinated + people_fully_vaccinated
 

@@ -116,7 +116,7 @@ def import_dataset(dataset_name, namespace, csv_path, default_variable_display, 
 
         variable_names_to_remove = list(set(db_variable_id_by_name.keys()) - set(variable_names))
         if len(variable_names_to_remove):
-            print(f"Removing variables: {str(variable_names_to_remove)}")
+            print(f"Removing variables: {variable_names_to_remove}")
             variable_ids_to_remove = [ db_variable_id_by_name[n] for n in variable_names_to_remove ]
             db.execute("""
                 DELETE FROM data_values
@@ -129,7 +129,7 @@ def import_dataset(dataset_name, namespace, csv_path, default_variable_display, 
 
         variable_names_to_insert = list(set(variable_names) - set(db_variable_id_by_name.keys()))
         if len(variable_names_to_insert):
-            print(f"Inserting variables: {str(variable_names_to_insert)}")
+            print(f"Inserting variables: {variable_names_to_insert}")
             for name in variable_names_to_insert:
                 db_variable_id_by_name[name] = db.upsert_variable(
                     name=name,
@@ -216,6 +216,8 @@ def import_dataset(dataset_name, namespace, csv_path, default_variable_display, 
 
     if slack_notifications:
         send_success(
-            channel='corona-data-updates' if not os.getenv('IS_DEV') else 'bot-testing',
-            title=f'Updated Grapher dataset: {dataset_name}'
+            channel='bot-testing'
+            if os.getenv('IS_DEV')
+            else 'corona-data-updates',
+            title=f'Updated Grapher dataset: {dataset_name}',
         )

@@ -65,9 +65,7 @@ class TrackVaccinesClient:
 
     def _valid_url(self, url: str):
         resp = requests.get(url, headers=get_headers())
-        if not resp.ok:
-            return False
-        return True
+        return bool(resp.ok)
 
     def vaccines_approved(self, location: str = None, original_names: bool = False) -> list:
         """Get list of approved vaccines in a country (or all if None specified).
@@ -94,22 +92,16 @@ class TrackVaccinesClient:
         content = soup.find(class_="card-grid alignwide")
         vaccines_html = content.find_all(class_="card__title has-text-align-center")
         vaccines = [e.find("span").text for e in vaccines_html]
-        if original_names:
-            return vaccines
-        return list(set(map(map_vaccine, vaccines)))
+        return vaccines if original_names else list(set(map(map_vaccine, vaccines)))
 
     def _parse_vaccines_all(self, soup: BeautifulSoup, original_names: bool = False):
         vaccines_html = soup.find("ul", class_="card-grid alignwide").find_all("h2")
         vaccines = [vax.find("span").text for vax in vaccines_html]
-        if original_names:
-            return vaccines
-        return list(set(map(map_vaccine, vaccines)))
+        return vaccines if original_names else list(set(map(map_vaccine, vaccines)))
 
 
 def map_vaccine(vaccine):
-    if vaccine in VAX_MAPPING:
-        return VAX_MAPPING[vaccine]
-    return vaccine
+    return VAX_MAPPING[vaccine] if vaccine in VAX_MAPPING else vaccine
 
 
 def vaccines_tracked(path_locations: str = None, location: str = None, as_list: bool = False) -> pd.DataFrame:
@@ -134,9 +126,7 @@ def vaccines_tracked(path_locations: str = None, location: str = None, as_list: 
         if isinstance(location, str):
             location = [location]
         df = df[df.location.isin(location)]
-    if as_list:
-        return list(set([vv for v in df.vaccines for vv in v]))
-    return df
+    return list({vv for v in df.vaccines for vv in v}) if as_list else df
 
 
 def vaccines_approved(path_locations: str = None, verbose: bool = False) -> pd.DataFrame:
@@ -206,8 +196,7 @@ def vaccines_missing(aggregated: bool = False, verbose: bool = False):
             num_untracked=df.untracked.apply(len)
         )
         df = df[["location", "unapproved", "num_unapproved", "untracked", "num_untracked"]]
-        df = df.sort_values(by="num_untracked", ascending=False)
-        return df
+        return df.sort_values(by="num_untracked", ascending=False)
 
 
 def vaccines_comparison_with_who():
@@ -215,9 +204,10 @@ def vaccines_comparison_with_who():
     url = "https://covid19.who.int/who-data/vaccination-metadata.csv"
     df_who = pd.read_csv(url)
     vaccines_used_who = df_who.groupby("ISO3").apply(
-        lambda x: set(
-            VACCINES_WHO_MAPPING[xx] for xx in x[~x.START_DATE.isnull()].VACCINE_NAME
-        )
+        lambda x: {
+            VACCINES_WHO_MAPPING[xx]
+            for xx in x[~x.START_DATE.isnull()].VACCINE_NAME
+        }
     )
     vaccines_used_who.name = "vaccines_used_who"
 
@@ -225,9 +215,8 @@ def vaccines_comparison_with_who():
     url = "https://github.com/owid/covid-19-data/raw/master/public/data/vaccinations/locations.csv"
     df_owid = pd.read_csv(url)
     vaccines_used_owid = df_owid.assign(
-        vaccines_used_owid=(
-            df_owid
-            .vaccines.apply(lambda x: set(xx.strip() for xx in x.split(", ")))
+        vaccines_used_owid=df_owid.vaccines.apply(
+            lambda x: {xx.strip() for xx in x.split(", ")}
         )
     )[["iso_code", "location", "vaccines_used_owid"]].set_index("iso_code")
 

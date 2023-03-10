@@ -32,7 +32,7 @@ class Uganda(TwitterCollectorBase):
                         "media_url": tweet.entities["media"][0]["media_url_https"],
                     })
             elif re.search(regex_2, tweet.full_text):
-                total_vaccinations = re.search(regex_2, tweet.full_text).group(1)
+                total_vaccinations = re.search(regex_2, tweet.full_text)[1]
                 data.append({
                     "date": dt,
                     "total_vaccinations": clean_count(total_vaccinations),

@@ -21,7 +21,7 @@ def connect_parse_data(source: str) -> pd.Series:
         driver.get(source)
         time.sleep(10)
 
-        date = re.search(r"Fecha de corte : ([\d/]{10})", driver.page_source).group(1)
+        date = re.search(r"Fecha de corte : ([\d/]{10})", driver.page_source)[1]
 
         for block in driver.find_elements_by_class_name("unselectable"):
             if block.get_attribute("aria-label") == "Dosis aplicadas Card":

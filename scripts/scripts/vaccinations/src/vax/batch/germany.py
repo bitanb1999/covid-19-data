@@ -22,10 +22,12 @@ class Germany:
         """Get vaccine columns mapped to Vaccine names."""
         EXCLUDE = ['kbv', 'dim']
         def _is_vaccine_column(column_name: str):
-            if re.search(self.regex_doses_colnames, column_name):
-                if re.search(self.regex_doses_colnames, column_name).group(1) not in EXCLUDE:
-                    return True
-            return False
+            return bool(
+                re.search(self.regex_doses_colnames, column_name)
+                and re.search(self.regex_doses_colnames, column_name)[1]
+                not in EXCLUDE
+            )
+
         for column_name in df.columns:
             if _is_vaccine_column(column_name) and  column_name not in self.vaccine_mapping:
                     raise ValueError(f"Found unknown vaccine: {column_name}")

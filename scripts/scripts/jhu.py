@@ -162,7 +162,9 @@ def check_data_correctness(df_merged):
 
     # Check for missing population figures
     df_pop = load_population()
-    pop_entity_diff = set(df_uniq["location"]) - set(df_pop["location"]) - set(["International"])
+    pop_entity_diff = (
+        set(df_uniq["location"]) - set(df_pop["location"]) - {"International"}
+    )
     if len(pop_entity_diff) > 0:
         # this is not an error, so don't increment errors variable
         print("\n" + WARNING + " These entities were not found in the population dataset:")

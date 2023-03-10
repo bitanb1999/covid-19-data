@@ -35,7 +35,7 @@ class AntiguaBarbuda:
             text = h.text.strip()
             if text == "Vaccinated Cases 1st Dose":
                 dose1_elem = h.parent
-            if text == "Vaccinated Cases 2nd Dose":
+            elif text == "Vaccinated Cases 2nd Dose":
                 dose2_elem = h.parent
         return dose1_elem, dose2_elem
 

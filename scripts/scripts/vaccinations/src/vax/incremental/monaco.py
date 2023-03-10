@@ -63,9 +63,9 @@ class Monaco:
         people_fully_vaccinated = re.search(self.regex["people_fully_vaccinated"], soup.text)
         metrics = {}
         if people_vaccinated:
-            metrics["people_vaccinated"] = clean_count(people_vaccinated.group(1))
+            metrics["people_vaccinated"] = clean_count(people_vaccinated[1])
         if people_fully_vaccinated:
-            metrics["people_fully_vaccinated"] = clean_count(people_fully_vaccinated.group(1))
+            metrics["people_fully_vaccinated"] = clean_count(people_fully_vaccinated[1])
         return metrics
 
     def parse_date(self, elem):

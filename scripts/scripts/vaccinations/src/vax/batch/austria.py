@@ -38,9 +38,13 @@ def filter_rows(df: pd.DataFrame) -> pd.DataFrame:
 def _get_vaccine_names(df: pd.DataFrame, translate: bool = False):
     ignore_fields = ['', 'Pro']
     regex_vaccines = r'EingetrageneImpfungen([a-zA-Z]*).*'
-    vaccine_names = sorted(set(
-        re.search(regex_vaccines, col).group(1) for col in df.columns if re.match(regex_vaccines, col)
-    ))
+    vaccine_names = sorted(
+        {
+            re.search(regex_vaccines, col)[1]
+            for col in df.columns
+            if re.match(regex_vaccines, col)
+        }
+    )
     vaccine_names = [vax for vax in vaccine_names if vax not in ignore_fields]
     if translate:
         return sorted([vaccine_mapping[v] for v in vaccine_names])
@@ -50,9 +54,10 @@ def _get_vaccine_names(df: pd.DataFrame, translate: bool = False):
 
 def _check_vaccine_names(df: pd.DataFrame) -> pd.DataFrame:
     vaccine_names = _get_vaccine_names(df)
-    unknown_vaccines = set(vaccine_names).difference(vaccine_mapping.keys())
-    if unknown_vaccines:
-        raise ValueError("Found unknown vaccines: {}".format(unknown_vaccines))
+    if unknown_vaccines := set(vaccine_names).difference(
+        vaccine_mapping.keys()
+    ):
+        raise ValueError(f"Found unknown vaccines: {unknown_vaccines}")
     return df
 
 

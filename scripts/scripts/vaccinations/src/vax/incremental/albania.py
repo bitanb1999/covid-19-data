@@ -63,14 +63,14 @@ class Albania:
         people_fully_vaccinated = re.search(self.regex["people_fully_vaccinated"], soup.text)
         metrics = {}
         if total_vaccinations:
-            metrics["total_vaccinations"] = clean_count(total_vaccinations.group(1))
+            metrics["total_vaccinations"] = clean_count(total_vaccinations[1])
         if people_fully_vaccinated:
-            metrics["people_fully_vaccinated"] = clean_count(people_fully_vaccinated.group(1))
+            metrics["people_fully_vaccinated"] = clean_count(people_fully_vaccinated[1])
         return metrics
 
     def parse_date(self, elem):
         match = re.search(self.regex["date"], elem.parent.text)
-        return clean_date(match.group(1), "%d/%m/%Y", minus_days=1)
+        return clean_date(match[1], "%d/%m/%Y", minus_days=1)
 
     def parse_link(self, elem):
         return elem.a.get("href")

@@ -9,12 +9,12 @@ def read(source: str) -> pd.Series:
         "primera_dosis_cantidad", "segunda_dosis_cantidad", "vacuna_nombre",
     ])
 
-    known_vaccines = set((
+    known_vaccines = {
         "AstraZeneca ChAdOx1 S recombinante",
         "COVISHIELD ChAdOx1nCoV COVID 19",
         "Sinopharm Vacuna SARSCOV 2 inactivada",
         "Sputnik V COVID19 Instituto Gamaleya",
-    ))
+    }
     assert set(df.vacuna_nombre) == known_vaccines, "New vaccine found!"
 
     return df.drop(columns="vacuna_nombre").sum(level=0, axis=1).sum()

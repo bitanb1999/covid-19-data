@@ -14,7 +14,7 @@ def read(source: str) -> pd.Series:
         if block.find("p").text == "ΣΥΝΟΛΟ ΕΜΒΟΛΙΑΣΜΩΝ":
             total_vaccinations = clean_count(block.find_all("p")[1].text)
             date = re.search(r"[\d/]{8,10}", block.find_all("p")[2].text)
-            date = clean_date(date.group(0), "%d/%m/%Y")
+            date = clean_date(date[0], "%d/%m/%Y")
 
         if block.find("p").text == "ΣΥΝΟΛΟ 1ης ΔΟΣΗΣ":
             people_vaccinated = clean_count(block.find_all("p")[1].text)

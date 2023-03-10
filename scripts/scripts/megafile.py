@@ -76,13 +76,12 @@ def get_jhu():
         data_frames.append(tmp)
     print()
 
-    # Outer join between all files
-    jhu = reduce(
-        lambda left, right: pd.merge(left, right, on=["date", "location"], how="outer"),
-        data_frames
+    return reduce(
+        lambda left, right: pd.merge(
+            left, right, on=["date", "location"], how="outer"
+        ),
+        data_frames,
     )
-
-    return jhu
 
 
 def get_reprod():
@@ -517,8 +516,9 @@ def generate_megafile():
     print("Adding ISO codes…")
     iso_codes = pd.read_csv(os.path.join(INPUT_DIR, "iso/iso3166_1_alpha_3_codes.csv"))
 
-    missing_iso = set(all_covid.location).difference(set(iso_codes.location))
-    if len(missing_iso) > 0:
+    if missing_iso := set(all_covid.location).difference(
+        set(iso_codes.location)
+    ):
         print(missing_iso)
         raise Exception("Missing ISO code for some locations")
 

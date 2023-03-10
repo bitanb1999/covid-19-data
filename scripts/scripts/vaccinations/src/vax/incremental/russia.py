@@ -23,20 +23,24 @@ def read(source: str) -> pd.Series:
 
     text = soup.find("div", id="data").find("p").text
 
-    date = re.search(r"На сегодня \(([\d\.]{8})\)", text).group(1)
+    date = re.search(r"На сегодня \(([\d\.]{8})\)", text)[1]
     date = clean_date(date, "%d.%m.%y")
 
     people_vaccinated = re.search(
-        r"([\d\s]+) чел\. \([\d\.]+% от населения[^)]*\) - привито хотя бы одним компонентом вакцины", text
-    ).group(1)
+        r"([\d\s]+) чел\. \([\d\.]+% от населения[^)]*\) - привито хотя бы одним компонентом вакцины",
+        text,
+    )[1]
     people_vaccinated = clean_count(people_vaccinated)
 
     people_fully_vaccinated = re.search(
-        r"([\d\s]+) чел\. \([\d\.]+% от населения,?[^)]*\) - полностью привито", text
-    ).group(1)
+        r"([\d\s]+) чел\. \([\d\.]+% от населения,?[^)]*\) - полностью привито",
+        text,
+    )[1]
     people_fully_vaccinated = clean_count(people_fully_vaccinated)
 
-    total_vaccinations = re.search(r"([\d\s]+) шт\. - всего прививок сделано", text).group(1)
+    total_vaccinations = re.search(
+        r"([\d\s]+) шт\. - всего прививок сделано", text
+    )[1]
     total_vaccinations = clean_count(total_vaccinations)
 
     return pd.Series({

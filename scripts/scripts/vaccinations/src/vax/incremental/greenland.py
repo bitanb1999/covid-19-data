@@ -34,8 +34,7 @@ def connect_parse_data(source: str) -> pd.Series:
 
 
 def parse_iframe_url(driver: webdriver.Chrome) -> str:
-    iframe_url = driver.find_element_by_class_name("vaccine").get_attribute("src")
-    return iframe_url
+    return driver.find_element_by_class_name("vaccine").get_attribute("src")
 
 
 def parse_doses(driver: webdriver.Chrome) -> tuple:

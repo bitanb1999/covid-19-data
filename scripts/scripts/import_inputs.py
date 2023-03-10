@@ -33,8 +33,7 @@ def _parse_args():
             "Path to folder containing input."
         )
     )
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def import_wb_income_groups(output: str, url: str = None):
@@ -118,9 +117,7 @@ def import_wb_income_groups(output: str, url: str = None):
 
 def main():
     args = _parse_args()
-    if args.dataset == "wb-income-groups":
-        import_wb_income_groups(args.input_dir)
-    elif args.dataset == "all":
+    if args.dataset in ["wb-income-groups", "all"]:
         import_wb_income_groups(args.input_dir)
 
 if __name__ == "__main__":

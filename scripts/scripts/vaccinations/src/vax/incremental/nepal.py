@@ -48,20 +48,20 @@ def get_text_from_pdf(url_pdf: str) -> str:
 
 def parse_date(pdf_text: str):
     regex = r"Updated as of (\d+)(.+)(20\d+)"
-    day = clean_count(re.search(regex, pdf_text).group(1))
-    month = _get_month(re.search(regex, pdf_text).group(2))
-    year = clean_count(re.search(regex, pdf_text).group(3))
+    day = clean_count(re.search(regex, pdf_text)[1])
+    month = _get_month(re.search(regex, pdf_text)[2])
+    year = clean_count(re.search(regex, pdf_text)[3])
     return datetime(year, month, day).strftime("%Y-%m-%d")
 
 
 def parse_people_vaccinated(pdf_text: str):
     regex = r"(\d+)\*? ?Total people vaccinated"
-    return clean_count(re.search(regex, pdf_text).group(1))
+    return clean_count(re.search(regex, pdf_text)[1])
 
 
 def parse_people_fully_vaccinated(pdf_text: str):
     regex = r"(\d+)\*? ?People Vaccinated \(Second Dose\)"
-    return clean_count(re.search(regex, pdf_text).group(1))
+    return clean_count(re.search(regex, pdf_text)[1])
 
 
 def _get_month(month_raw: str):

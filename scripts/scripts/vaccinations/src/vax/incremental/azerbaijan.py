@@ -18,8 +18,7 @@ def read(source: str):
     url = parse_pdf_link(soup, source)
     if not url.endswith(".pdf"):
         raise ValueError(f"File reporting metrics is not a PDF: {url}!")
-    ds = pd.Series(parse_data(url))
-    return ds
+    return pd.Series(parse_data(url))
 
 
 def parse_pdf_link(soup: BeautifulSoup, source: str):
@@ -48,7 +47,7 @@ def parse_date(filename):
         page = reader.getPage(0)
         text = page.extractText()
     # Get date
-    date_str = re.search(r"\n(?P<count>\d{1,2}.\d{1,2}.\d{4})\n", text).group(1)
+    date_str = re.search(r"\n(?P<count>\d{1,2}.\d{1,2}.\d{4})\n", text)[1]
     return clean_date(date_str, "%d.%m.%Y")
 
 def parse_vaccinations(filename):
@@ -63,9 +62,11 @@ def parse_vaccinations(filename):
     idx_dose_1 = strs.index("1-ci mərhələ üzrə ")
     idx_dose_2 = strs.index("2-ci mərhələ üzrə ")
     # Get metrics
-    total_vaccinations = max([int(s) for s in strs[idx_total_vax:idx_dose_1] if s.isnumeric()])
-    dose_1 = max([int(s) for s in strs[idx_dose_1:idx_dose_2] if s.isnumeric()])
-    dose_2 = max([int(s) for s in strs[idx_dose_2:] if s.isnumeric()])
+    total_vaccinations = max(
+        int(s) for s in strs[idx_total_vax:idx_dose_1] if s.isnumeric()
+    )
+    dose_1 = max(int(s) for s in strs[idx_dose_1:idx_dose_2] if s.isnumeric())
+    dose_2 = max(int(s) for s in strs[idx_dose_2:] if s.isnumeric())
     # Sanity check
     if dose_1 + dose_2 != total_vaccinations:
         raise ValueError(

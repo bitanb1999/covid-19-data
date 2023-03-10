@@ -62,13 +62,10 @@ class Cuba:
         record = {}
         if match:
             # date
-            date_str = match.group(1)
+            date_str = match[1]
             date_str = clean_date(f"{date_str} {datetime.now().year}", "%d de %B %Y", lang="es")
-            record = {
-                "date": date_str,
-                "total_vaccinations":  _clean_metric(match.group(2)),
-            }
-            # vaccinations
+            record = {"date": date_str, "total_vaccinations": _clean_metric(match[2])}
+                # vaccinations
         return record
 
     def pipe_add_remaining_metrics_default(self, df: pd.DataFrame) -> pd.DataFrame:

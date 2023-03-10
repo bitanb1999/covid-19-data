@@ -29,7 +29,7 @@ def main(paths):
     data["people_fully_vaccinated"] = clean_count(dose2)
     data["total_vaccinations"] = data["people_vaccinated"] + data["people_fully_vaccinated"]
 
-    date = re.search(r"\d+/\d+/202\d", date).group(0)
+    date = re.search(r"\d+/\d+/202\d", date)[0]
     data["date"] = clean_date(date, "%d/%m/%Y")
 
     increment(

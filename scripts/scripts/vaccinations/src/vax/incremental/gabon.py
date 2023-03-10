@@ -23,17 +23,15 @@ class Gabon:
 
     def parse_data(self, soup: BeautifulSoup) -> pd.Series:
         h6 = soup.find_all("h6")
-        for i, h in enumerate(h6):
+        for h in h6:
             # print(i)
             text = h.text.strip()
             if text == "1ière dose":
                 people_vaccinated = clean_count(h.parent.find("h3").text)
             elif text == "2ième dose":
                 people_fully_vaccinated = clean_count(h.parent.find("h3").text)
-            else:
-                match = re.search(self.regex["date"], text)
-                if match:
-                    date_str = extract_clean_date(text, self.regex["date"], "%d-%m-%Y")
+            elif match := re.search(self.regex["date"], text):
+                date_str = extract_clean_date(text, self.regex["date"], "%d-%m-%Y")
         return pd.Series({
             "people_vaccinated": people_vaccinated,
             "people_fully_vaccinated": people_fully_vaccinated,

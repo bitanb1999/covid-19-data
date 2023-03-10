@@ -49,22 +49,24 @@ def parse_data(soup: BeautifulSoup) -> pd.Series:
     }
 
     # Correct Thai Sprcial Character Error
-    special_char_replace = dict((re.escape(k), v) for k, v in special_char_replace.items())
+    special_char_replace = {
+        re.escape(k): v for k, v in special_char_replace.items()
+    }
     pattern = re.compile("|".join(special_char_replace.keys()))
     text = pattern.sub(lambda m: special_char_replace[re.escape(m.group(0))], raw_text)
 
     total_vaccinations_regex = r"ผู้ที่ได้รับวัคซีนสะสม .{1,100} ทั้งหมด[^\d]+([\d,]+) โดส"
-    total_vaccinations = re.search(total_vaccinations_regex, text).group(1)
+    total_vaccinations = re.search(total_vaccinations_regex, text)[1]
     total_vaccinations = clean_count(total_vaccinations)
 
     people_vaccinated_regex = r"ผู้ได้รับวัคซีนเข็มที่ 1 .{1,3}นวน[^\d]+([\d,]+) ?ร.{1,3}ย"
-    people_vaccinated = re.search(people_vaccinated_regex, text).group(1)
+    people_vaccinated = re.search(people_vaccinated_regex, text)[1]
     people_vaccinated = clean_count(people_vaccinated)
 
     people_fully_vaccinated_regex = (
         r"นวนผู้ได้รับวัคซีนครบต.{1,2}มเกณฑ์ \(ได้รับวัคซีน 2 เข็ม\) .{1,3}นวน[^\d]+([\d,]+)"
     )
-    people_fully_vaccinated = re.search(people_fully_vaccinated_regex, text).group(1)
+    people_fully_vaccinated = re.search(people_fully_vaccinated_regex, text)[1]
     people_fully_vaccinated = clean_count(people_fully_vaccinated)
 
     # thai_date_regex = r"\(\s?ข้อมูล ณ วันที่ (.{1,30}) เวล(.{1,3}) (.{1,10}) น.\s?\)"
@@ -99,9 +101,9 @@ def parse_data(soup: BeautifulSoup) -> pd.Series:
         "2566": 2023,
         "2567": 2024
     }
-    year = thai_date_replace[thai_date.group(3)]
-    month = thai_date_replace[thai_date.group(2)]
-    day = clean_count(thai_date.group(1))
+    year = thai_date_replace[thai_date[3]]
+    month = thai_date_replace[thai_date[2]]
+    day = clean_count(thai_date[1])
     date_str = datetime(
         year,
         month,

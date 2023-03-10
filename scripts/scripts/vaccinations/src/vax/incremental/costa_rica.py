@@ -31,7 +31,7 @@ def parse_data(soup: BeautifulSoup) -> pd.Series:
     assert people_vaccinated >= people_fully_vaccinated
 
     date = soup.find(class_="fuente").text
-    date = re.search(r"\d{2}-\d{2}-\d{4}", date).group(0)
+    date = re.search(r"\d{2}-\d{2}-\d{4}", date)[0]
     date = clean_date(date, "%d-%m-%Y")
 
     data = {

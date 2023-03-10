@@ -94,12 +94,16 @@ def _fill_virus_tests(row: Union[pd.Series, dict], new_or_cum: str, max_date: st
         val: Union[int, float]. The filled value of 
             newVirusTests/cumVirusTests.
     """
-    assert new_or_cum in ['new', 'cum'], "`new_or_cum` must be one of 'new' or 'cum'"
+    assert new_or_cum in {
+        'new',
+        'cum',
+    }, "`new_or_cum` must be one of 'new' or 'cum'"
     val = row[f'{new_or_cum}VirusTests']
-    condition = row['Date'] <= max_date and \
-                pd.isnull(row[f'{new_or_cum}VirusTests']) and \
-                pd.notnull(row[f'{new_or_cum}PillarOneTwoTestsByPublishDate'])
-    if condition:
+    if (
+        condition := row['Date'] <= max_date
+        and pd.isnull(row[f'{new_or_cum}VirusTests'])
+        and pd.notnull(row[f'{new_or_cum}PillarOneTwoTestsByPublishDate'])
+    ):
         val = row[f'{new_or_cum}PillarOneTwoTestsByPublishDate']
     return val
 

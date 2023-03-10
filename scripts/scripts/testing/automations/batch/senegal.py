@@ -4,6 +4,7 @@ Dashboard: http://www.sante.gouv.sn/
 
 """
 
+
 import json
 import requests
 import datetime
@@ -20,14 +21,14 @@ DATE_COL = 'Date'
 DATA_URL = 'https://services7.arcgis.com/Z6qiqUaS6ImjYL5S/arcgis/rest/services/tendance_nationale/FeatureServer/0/query'
 PARAMS = {
     'f': 'json',
-    'where': f"1=1", # "Dates>'2020-01-01 00:00:00'",
+    'where': "1=1",
     'returnGeometry': False,
     'spatialRel': 'esriSpatialRelIntersects',
     'outFields': f'{DATE_COL},Nombre_de_tests_realises',
     'orderByFields': f'{DATE_COL} asc',
     'resultOffset': 0,
     'resultRecordCount': 32000,
-    'resultType': 'standard'
+    'resultType': 'standard',
 }
 
 # hardcoded values

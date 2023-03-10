@@ -22,22 +22,21 @@ class Paraguay(TwitterCollectorBase):
         regex = r"VACUNACIÓN #COVID19 \| Reporte del (\d{1,2}\.\d{1,2}\.202\d) - \d{1,2}:\d{1,2}"
         data = []
         for tweet in self.tweets:
-            match = re.search(regex, tweet.full_text)
-            if match:
+            if match := re.search(regex, tweet.full_text):
                 regex_doses = r"Total Dosis Administradas: ([\d\.]+)"
                 total_vaccinations = re.search(regex_doses, tweet.full_text)
                 if total_vaccinations:
-                    total_vaccinations = clean_count(total_vaccinations.group(1))
+                    total_vaccinations = clean_count(total_vaccinations[1])
                 else:
                     total_vaccinations = pd.NA
                 regex_people = r"Total personas vacunadas: ([\d\.]+)"
                 people_vaccinated = re.search(regex_people, tweet.full_text)
                 if people_vaccinated:
-                    people_vaccinated = clean_count(people_vaccinated.group(1))
+                    people_vaccinated = clean_count(people_vaccinated[1])
                 else:
                     people_vaccinated = pd.NA
                 people_fully_vaccinated = total_vaccinations - people_vaccinated
-                dt = clean_date(match.group(1), "%d.%m.%Y")
+                dt = clean_date(match[1], "%d.%m.%Y")
                 if self.stop_search(dt):
                     break
                 data.append({
@@ -49,8 +48,7 @@ class Paraguay(TwitterCollectorBase):
                     "source_url": 1,#pan.build_post_url(tweet.id),
                     "media_url": tweet.extended_entities["media"][0]["media_url_https"],
                 })
-        df = pd.DataFrame(data)
-        return df
+        return pd.DataFrame(data)
 
 
 def main(api, paths):

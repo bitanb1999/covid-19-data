@@ -19,9 +19,8 @@ class Gabon(TwitterCollectorBase):
         regex = r"Recevez la situation .* au (\d{1,2} [a-z]+ 202\d)\."
         data = []
         for tweet in self.tweets:
-            match = re.search(regex, tweet.full_text)
-            if match:
-                dt = clean_date(match.group(1), "%d %B %Y", lang="fr")
+            if match := re.search(regex, tweet.full_text):
+                dt = clean_date(match[1], "%d %B %Y", lang="fr")
                 if self.stop_search(dt):
                     break
                 data.append({

@@ -33,16 +33,13 @@ class TwitterCollectorBase:
 
     @property
     def last_update(self):
-        if self._data_old is not None:
-            return self._data_old.date.max()
-        else:
-            return None
+        return self._data_old.date.max() if self._data_old is not None else None
 
     def _propose_df(self):
         raise NotImplementedError
 
     def propose_df(self):
-        df = (
+        return (
             self._propose_df()
             .pipe(self._add_metrics)
             .pipe(self.merge_with_current_data)
@@ -50,7 +47,6 @@ class TwitterCollectorBase:
             .reset_index(drop=True)
             .sort_values("date")
         )
-        return df
 
     def _add_metrics(self, df):
         if isinstance(self.add_metrics_nan, list):
@@ -63,11 +59,8 @@ class TwitterCollectorBase:
         return df
 
     def _order_columns(self, df):
-        column_metrics = []
         column_optional = []
-        for col in COLUMN_METRICS_ALL:
-            if col in df.columns:
-                column_metrics.append(col)
+        column_metrics = [col for col in COLUMN_METRICS_ALL if col in df.columns]
         if "media_url" in df:
             column_optional.append("media_url")
 
@@ -86,12 +79,7 @@ class TwitterCollectorBase:
         return df
 
     def stop_search(self, dt):
-        if self._data_old is None:
-            return False
-        elif dt >= self.last_update:
-            return False
-        elif dt < self.last_update:
-            return True
+        return self._data_old is not None and dt < self.last_update
 
     def to_csv(self):
         df = self.propose_df()

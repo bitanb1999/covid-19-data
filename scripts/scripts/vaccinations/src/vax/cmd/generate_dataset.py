@@ -156,16 +156,15 @@ class DatasetGenerator:
 
     def pipe_aggregates(self, df: pd.DataFrame) -> pd.DataFrame:
         logger.info(f"Building aggregate regions {list(self.aggregates.keys())}")
-        aggs = []
-        for agg_name, value in self.aggregates.items():
-            aggs.append(
-                self._get_aggregate(
-                    df=df,
-                    agg_name=agg_name,
-                    included_locs=self.aggregates[agg_name]["included_locs"],
-                    excluded_locs=self.aggregates[agg_name]["excluded_locs"]
-                )
+        aggs = [
+            self._get_aggregate(
+                df=df,
+                agg_name=agg_name,
+                included_locs=self.aggregates[agg_name]["included_locs"],
+                excluded_locs=self.aggregates[agg_name]["excluded_locs"],
             )
+            for agg_name, value in self.aggregates.items()
+        ]
         return pd.concat([df] + aggs, ignore_index=True)
 
     def pipe_daily(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -192,13 +191,11 @@ class DatasetGenerator:
         )
         # Calculate and add smoothed vars
         new_interpolated_smoothed = (
-            df
-            .total_vaccinations
-            .interpolate(method='linear')
+            df.total_vaccinations.interpolate(method='linear')
             .diff()
             .rolling(7, min_periods=1)
             .mean()
-            .apply(lambda x: round(x) if not isnan(x) else x)
+            .apply(lambda x: x if isnan(x) else round(x))
         )
         df = df.assign(
             new_vaccinations_smoothed=new_interpolated_smoothed

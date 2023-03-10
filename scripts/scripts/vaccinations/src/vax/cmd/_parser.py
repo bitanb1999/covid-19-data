@@ -94,5 +94,4 @@ def _parse_args():
                 "It requires that the R script is previously run (without removing temporary files vax & metadata)!"
         )
     )
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()

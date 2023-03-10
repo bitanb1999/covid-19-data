@@ -20,10 +20,9 @@ class Zimbabwe(TwitterCollectorBase):
         regex = r"COVID-19 update: As at (\d{1,2} [a-zA-Z]+ 202\d), .* a total of ([\d ]+) people have been vaccinated"
         data = []
         for tweet in self.tweets:
-            match = re.search(regex, tweet.full_text)
-            if match:
-                dt = clean_date(match.group(1), "%d %B %Y")
-                total_vaccinations = clean_count(match.group(2))
+            if match := re.search(regex, tweet.full_text):
+                dt = clean_date(match[1], "%d %B %Y")
+                total_vaccinations = clean_count(match[2])
                 dt = tweet.created_at.strftime("%Y-%m-%d")
                 if self.stop_search(dt):
                     break

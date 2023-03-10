@@ -26,22 +26,24 @@ def parse_data(soup: BeautifulSoup) -> pd.Series:
 
 
 def parse_date(df: pd.DataFrame) -> str:
-    date = re.search(r"Dati aggiornati al (\d{2}/\d{2}/\d{4})", df).group(1)
+    date = re.search(r"Dati aggiornati al (\d{2}/\d{2}/\d{4})", df)[1]
     return clean_date(date, "%d/%m/%Y")
 
 
 def parse_people_vaccinated(df: pd.DataFrame) -> int:
-    people_vaccinated = re.search(r"([\d,. ]+) [Vv]accinazioni Prima Dose", df).group(1)
+    people_vaccinated = re.search(r"([\d,. ]+) [Vv]accinazioni Prima Dose", df)[1]
     return clean_count(people_vaccinated)
 
 
 def parse_people_fully_vaccinated(df: pd.DataFrame) -> int:
-    people_fully_vaccinated = re.search(r"([\d,. ]+) [Vv]accinazioni Seconda Dose", df).group(1)
+    people_fully_vaccinated = re.search(
+        r"([\d,. ]+) [Vv]accinazioni Seconda Dose", df
+    )[1]
     return clean_count(people_fully_vaccinated)
 
 
 def parse_total_vaccinations(df: pd.DataFrame) -> int:
-    total_vaccinations = re.search(r"([\d,. ]+) [Vv]accinazioni Totali", df).group(1)
+    total_vaccinations = re.search(r"([\d,. ]+) [Vv]accinazioni Totali", df)[1]
     return clean_count(total_vaccinations)
 
 

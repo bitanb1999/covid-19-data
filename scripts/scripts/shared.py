@@ -176,8 +176,8 @@ def inject_total_daily_cols(df, measures):
     # must sort in order to have the cumsum() and diff() in the right direction
     df = df.copy().sort_values(by=['location', 'date'])
     for measure in measures:
-        total_col = 'total_%s' % measure
-        daily_col = 'new_%s' % measure
+        total_col = f'total_{measure}'
+        daily_col = f'new_{measure}'
         if total_col not in df.columns and daily_col in df.columns:
             df[total_col] = df.groupby('location')[daily_col].cumsum().astype('Int64')
         elif daily_col not in df.columns and total_col in df.columns:
@@ -272,9 +272,7 @@ def _date_diff(a, b, positive_only=False):
     if pd.isnull(a) or pd.isnull(b):
         return None
     diff = (a - b).days
-    if positive_only and diff < 0:
-        return None
-    return diff
+    return None if positive_only and diff < 0 else diff
 
 def _days_since(df, spec):
     ref_date = pd.to_datetime(_get_date_of_threshold(df, spec['value_col'], spec['value_threshold']))
@@ -463,10 +461,10 @@ def inject_doubling_days(df):
 # ====================================
 
 def _inject_growth(df, prefix, periods):
-    cases_colname = '%s_cases' % prefix
-    deaths_colname = '%s_deaths' % prefix
-    cases_growth_colname = '%s_pct_growth_cases' % prefix
-    deaths_growth_colname = '%s_pct_growth_deaths' % prefix
+    cases_colname = f'{prefix}_cases'
+    deaths_colname = f'{prefix}_deaths'
+    cases_growth_colname = f'{prefix}_pct_growth_cases'
+    deaths_growth_colname = f'{prefix}_pct_growth_deaths'
 
     df[[cases_colname, deaths_colname]] = df[['location', 'new_cases', 'new_deaths']].fillna(0) \
         .groupby('location')[['new_cases', 'new_deaths']] \
@@ -499,9 +497,7 @@ BASE_MEASURES = [
     'biweekly_cases', 'biweekly_deaths'
 ]
 
-PER_MILLION_MEASURES = [
-    '%s_per_million' % m for m in BASE_MEASURES
-]
+PER_MILLION_MEASURES = [f'{m}_per_million' for m in BASE_MEASURES]
 
 DAYS_SINCE_MEASURES = list(days_since_spec.keys())
 
@@ -586,16 +582,29 @@ def standard_export(df, output_path, grapher_name):
     # Grapher
     df_grapher = df.copy()
     df_grapher['date'] = pd.to_datetime(df_grapher['date']).map(lambda date: (date - zero_day).days)
-    df_grapher = df_grapher[GRAPHER_COL_NAMES.keys()] \
-        .rename(columns=GRAPHER_COL_NAMES) \
-        .to_csv(os.path.join(output_path, '%s.csv' % grapher_name), index=False)
+    df_grapher = (
+        df_grapher[GRAPHER_COL_NAMES.keys()]
+        .rename(columns=GRAPHER_COL_NAMES)
+        .to_csv(os.path.join(output_path, f'{grapher_name}.csv'), index=False)
+    )
 
     # Table & public extracts for external users
     # Excludes aggregates
-    excluded_aggregates = list(set(aggregates_spec.keys()) - set([
-        'World', 'North America', 'South America', 'Europe', 'Africa', 'Asia', 'Oceania',
-        'European Union'
-    ]))
+    excluded_aggregates = list(
+        (
+            set(aggregates_spec.keys())
+            - {
+                'World',
+                'North America',
+                'South America',
+                'Europe',
+                'Africa',
+                'Asia',
+                'Oceania',
+                'European Union',
+            }
+        )
+    )
     df_table = df[~df['location'].isin(excluded_aggregates)]
     # full_data.csv
     full_data_cols = existsin(FULL_DATA_COLS, df_table.columns)
@@ -611,5 +620,5 @@ def standard_export(df, output_path, grapher_name):
         # move World to first column
         cols = df_pivot.columns.tolist()
         cols.insert(0, cols.pop(cols.index('World')))
-        df_pivot[cols].to_csv(os.path.join(output_path, '%s.csv' % col_name))
+        df_pivot[cols].to_csv(os.path.join(output_path, f'{col_name}.csv'))
     return True

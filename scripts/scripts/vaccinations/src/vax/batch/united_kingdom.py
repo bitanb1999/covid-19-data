@@ -78,8 +78,7 @@ def exclude_data_points(df: pd.DataFrame) -> pd.DataFrame:
     # The data contains an error that creates a negative change
     df = df[(df.location != "Northern Ireland") | (df.date != "2021-02-20")]
     df = df[(df.location != "England") | (df.date != "2021-01-09")]
-    df = df[(df.location != "Scotland") | (df.date != "2021-01-09")]
-    return df
+    return df[(df.location != "Scotland") | (df.date != "2021-01-09")]
 
 
 def pipeline(df: pd.DataFrame, source_url: str) -> pd.DataFrame:

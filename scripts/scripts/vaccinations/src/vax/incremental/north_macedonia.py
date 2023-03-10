@@ -18,10 +18,12 @@ def connect_parse_data(source: str) -> pd.Series:
 
     total_vaccinations = people_vaccinated
 
-    return pd.Series(data={
-        "total_vaccinations": total_vaccinations,
-        "people_vaccinated": people_vaccinated,
-    })
+    return pd.Series(
+        data={
+            "total_vaccinations": total_vaccinations,
+            "people_vaccinated": total_vaccinations,
+        }
+    )
 
 
 def enrich_date(ds: pd.Series) -> pd.Series:
